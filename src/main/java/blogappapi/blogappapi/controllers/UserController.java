@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.Map;
@@ -20,13 +21,13 @@ public class UserController {
     private UserService userService;
     // Post - create user
     @PostMapping("/")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto createUser = this.userService.createUser(userDto);
         return new ResponseEntity<>(createUser, HttpStatus.CREATED);
     }
     // Put - update user
     @PutMapping("/update/{userId}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,@PathVariable("userId") Integer user_Id)
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto,@PathVariable("userId") Integer user_Id)
     {
         UserDto updatedUser=this.userService.updateUser(userDto,user_Id);
         return ResponseEntity.ok(updatedUser);
