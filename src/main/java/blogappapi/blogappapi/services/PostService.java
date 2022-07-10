@@ -2,6 +2,7 @@ package blogappapi.blogappapi.services;
 
 import blogappapi.blogappapi.entities.Post;
 import blogappapi.blogappapi.payloads.PostDto;
+import blogappapi.blogappapi.payloads.PostResponse;
 import javafx.geometry.Pos;
 
 import java.util.List;
@@ -25,5 +26,7 @@ public interface PostService {
     // get all posts by user Id
     List<PostDto> getPostsByUserID(Integer userId);
 
-   // List<PostDto> getAllPostPaging(Integer pageNumber, Integer pageSize);
+    PostResponse getAllPostPaging(Integer pageNumber, Integer pageSize);
+
+    PostResponse getAllPostPagingSort(Integer pageNumber, Integer pageSize, String sortBy,String sortDir);
 }

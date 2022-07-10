@@ -1,6 +1,7 @@
 package blogappapi.blogappapi.controllers;
 import blogappapi.blogappapi.payloads.ApiResponse;
 import blogappapi.blogappapi.payloads.PostDto;
+import blogappapi.blogappapi.payloads.PostResponse;
 import blogappapi.blogappapi.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,13 +62,26 @@ public class PostController {
         PostDto postDtoUpdate = this.postService.updatePost(postDto, postId);
         return new ResponseEntity<PostDto>(postDtoUpdate, HttpStatus.OK);
     }
+    // pageaable
+    @GetMapping("/posts/paging")
+    public ResponseEntity<PostResponse> getAllPostsPaging(
+            @RequestParam(value = "pageNumber", defaultValue = "1",required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "5",required = false) Integer pageSize)
+    {
+        PostResponse allPost = this.postService.getAllPostPaging(pageNumber,pageSize);
+        return new ResponseEntity<PostResponse>(allPost,HttpStatus.OK);
+    }
+
     // pagenation and sorting
-//    @GetMapping("/posts")
-//    public ResponseEntity<List<PostDto>> getAllPostsPaging(
-//            @RequestParam(value = "pageNumber", defaultValue = "1",required = false) Integer pageNumber,
-//            @RequestParam(value = "pageSize", defaultValue = "5",required = false) Integer pageSize)
-//    {
-//        List<PostDto> allPost = this.postService.getAllPostPaging(pageNumber,pageSize);
-//        return new ResponseEntity<List<PostDto>>(allPost,HttpStatus.OK);
-//    }
+    @GetMapping("/posts/paging/sort")
+    public ResponseEntity<PostResponse> getAllPostsSort(
+            @RequestParam(value = "pageNumber", defaultValue = "0",required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "5",required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "postId",required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc",required = false) String sortDir
+            )
+    {
+        PostResponse allPost = this.postService.getAllPostPagingSort(pageNumber,pageSize,sortBy,sortDir);
+        return new ResponseEntity<PostResponse>(allPost,HttpStatus.OK);
+    }
 }
