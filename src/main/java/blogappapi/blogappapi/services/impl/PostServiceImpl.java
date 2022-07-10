@@ -5,12 +5,18 @@ import blogappapi.blogappapi.entities.Post;
 import blogappapi.blogappapi.entities.User;
 import blogappapi.blogappapi.exceptions.ResourceNotFoundException;
 import blogappapi.blogappapi.payloads.PostDto;
+import blogappapi.blogappapi.payloads.PostResponse;
 import blogappapi.blogappapi.repository.CategoryRepo;
 import blogappapi.blogappapi.repository.PostRepo;
 import blogappapi.blogappapi.repository.UserRepo;
 import blogappapi.blogappapi.services.PostService;
+import javafx.geometry.Pos;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -99,9 +105,48 @@ public class PostServiceImpl implements PostService {
     }
 
     // pagenation and sorting
-//    @Override
-//    public List<PostDto> getAllPostPaging(Integer pageNumber, Integer pageSize) {
-//        return null;
-//    }
+    @Override
+    public PostResponse getAllPostPaging(Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber,pageSize);
+        Page<Post> pagePost = this.postRepo.findAll(page);
+        List<Post> allPosts = pagePost.getContent();
+        List<PostDto> postDtos = allPosts.stream().map((post)->this.modelMapper.map(post,PostDto.class))
+                .collect(Collectors.toList());
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePost.getNumber());
+        postResponse.setPageSize(pagePost.getSize());
+        postResponse.setTotalElements(pagePost.getTotalElements());
+        postResponse.setTotalPages(pagePost.getTotalPages());
+        postResponse.setLastPage(pagePost.isLast());
+        return postResponse;
+    }
+// pageable and sorting
+    @Override
+    public PostResponse getAllPostPagingSort(Integer pageNumber, Integer pageSize, String sortBy,String sortDir) {
+      //  Pageable page = PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
+       // Pageable page = PageRequest.of(pageNumber,pageSize, Sort.by(sortBy).descending());
+//        if(sortDir.equalsIgnoreCase("asc")){
+//            sort = sort.by(sortBy).ascending();
+//        }else {
+//            sort = sort.by(sortBy).descending();
+//        }
+        Sort sort =null;
+        sort = (sortDir.equalsIgnoreCase("asc")) ? sort.by(sortBy).ascending() : sort.by(sortBy).descending();
+        Pageable page = PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<Post> pagePost = this.postRepo.findAll(page);
+        List<Post> allPosts = pagePost.getContent();
+        List<PostDto> postDtos = allPosts.stream().map((post)->this.modelMapper.map(post,PostDto.class))
+                .collect(Collectors.toList());
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePost.getNumber());
+        postResponse.setPageSize(pagePost.getSize());
+        postResponse.setTotalElements(pagePost.getTotalElements());
+        postResponse.setTotalPages(pagePost.getTotalPages());
+        postResponse.setLastPage(pagePost.isLast());
+        return postResponse;
+    }
 
 }
