@@ -29,4 +29,6 @@ public interface PostService {
     PostResponse getAllPostPaging(Integer pageNumber, Integer pageSize);
 
     PostResponse getAllPostPagingSort(Integer pageNumber, Integer pageSize, String sortBy,String sortDir);
+
+    List<PostDto> searchPosts(String keywords);
 }
