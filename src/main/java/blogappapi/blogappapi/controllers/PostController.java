@@ -1,4 +1,5 @@
 package blogappapi.blogappapi.controllers;
+import blogappapi.blogappapi.cofig.AppConstants;
 import blogappapi.blogappapi.payloads.ApiResponse;
 import blogappapi.blogappapi.payloads.PostDto;
 import blogappapi.blogappapi.payloads.PostResponse;
@@ -65,8 +66,8 @@ public class PostController {
     // pageaable
     @GetMapping("/posts/paging")
     public ResponseEntity<PostResponse> getAllPostsPaging(
-            @RequestParam(value = "pageNumber", defaultValue = "1",required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "5",required = false) Integer pageSize)
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize)
     {
         PostResponse allPost = this.postService.getAllPostPaging(pageNumber,pageSize);
         return new ResponseEntity<PostResponse>(allPost,HttpStatus.OK);
@@ -75,13 +76,19 @@ public class PostController {
     // pagenation and sorting
     @GetMapping("/posts/paging/sort")
     public ResponseEntity<PostResponse> getAllPostsSort(
-            @RequestParam(value = "pageNumber", defaultValue = "0",required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "5",required = false) Integer pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "postId",required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = "asc",required = false) String sortDir
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR,required = false) String sortDir
             )
     {
         PostResponse allPost = this.postService.getAllPostPagingSort(pageNumber,pageSize,sortBy,sortDir);
         return new ResponseEntity<PostResponse>(allPost,HttpStatus.OK);
+    }
+    // searching
+    @GetMapping("/posts/search/{keywords}")
+    public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable String keywords){
+       List<PostDto> result = this.postService.searchPosts(keywords);
+       return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK);
     }
 }
