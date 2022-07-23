@@ -1,12 +1,16 @@
 package blogappapi.blogappapi.services.impl;
 
+import blogappapi.blogappapi.cofig.AppConstants;
+import blogappapi.blogappapi.entities.Role;
 import blogappapi.blogappapi.entities.User;
 import blogappapi.blogappapi.exceptions.ResourceNotFoundException;
 import blogappapi.blogappapi.payloads.UserDto;
+import blogappapi.blogappapi.repository.RoleRepo;
 import blogappapi.blogappapi.repository.UserRepo;
 import blogappapi.blogappapi.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +22,11 @@ public class UserServiceImpl implements UserService {
     private UserRepo userRepo;
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleRepo roleRepo;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -59,6 +68,19 @@ public class UserServiceImpl implements UserService {
         User user = this.userRepo.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("User","id",userId));
         this.userRepo.delete(user);
+    }
+
+    @Override
+    public UserDto registerNewUser(UserDto userDto) {
+        User user = this.modelMapper.map(userDto,User.class);
+        // encode the password
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        //roles
+        Role role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+        user.getRoles().add(role);
+        User newUser = this.userRepo.save(user);
+        return this.modelMapper.map(newUser,UserDto.class);
+
     }
 
     // with use mapper class manually
